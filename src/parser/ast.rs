@@ -14,6 +14,7 @@ pub enum SchemaNode {
     Connection(Connection),
     Component(Component),
     Wire(Wire),
+    Text(Text),
 }
 
 /// Header enum for encapsulating the various types of headers.
@@ -62,6 +63,18 @@ pub struct Connection {
 pub struct Wire {
     pub start: Coords,
     pub end: Coords,
+}
+
+/// A text label inside of the save file.
+///
+/// # [Text] Structure
+///
+/// - [Text::pos]: Location of the text.
+/// - [Text::content]: Content of the text label (what it displays).
+#[derive(Debug, PartialEq)]
+struct Text {
+    pub pos: Coords,
+    pub content: String,
 }
 
 /// A "Component" inside of the schema file. This appears to be the main

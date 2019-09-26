@@ -8,7 +8,8 @@ use crate::parser::ast::{
     HeaderKind,
     Connection,
     Wire,
-    Coords
+    Coords,
+    Text
 };
 
 grammar;
@@ -40,6 +41,16 @@ EncodingTypeSwitch: EncodeKind = {
     "encoding" "utf-8" => EncodeKind::UTF8,
 }
 
+NodeAlt: SchemaNode = {
+    <ConnectionDecl> => SchemaNode::Connection(<>),
+    <WireDecl> => SchemaNode::Wire(<>),
+    <TextDecl> => SchemaNode::Text(<>)
+}
+
+TextDecl: Text = {
+    "Text" "Label" <c:CoordDecl> => Text { pos: c, body: unimplemented!() }
+}
+
 ComponentDecl: Component = {
     "$Comp" <n:CompName> "$EndComp" => Component { name: n }
 }
@@ -48,10 +59,6 @@ CompName: (String, String) = {
     <Name> ":" <Name>
 }
 
-NodeAlt: SchemaNode = {
-    <t:ConnectionDecl> => SchemaNode::Connection(t),
-    <t:WireDecl> => SchemaNode::Wire(t)
-}
 
 WireDecl: Wire = {
     "Wire" "Wire" "Line" <s:CoordDecl> <e:CoordDecl> => Wire { start: s, end: e }
