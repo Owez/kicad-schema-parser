@@ -1,15 +1,43 @@
 use std::str::FromStr;
-use chrono::prelude::*;
-use crate::parser::ast::{KiCADSchema, SchemaNode, Component, Connection, Wire, Coords};
+use chrono::{Date, Utc};
+use crate::parser::ast::{
+    KiCADSchema,
+    SchemaNode,
+    Component,
+    EncodeKind,
+    HeaderKind,
+    Connection,
+    Wire,
+    Coords
+};
 
 grammar;
 
-pub Grammar: Vec<SchemaNode> = {
-    NodeColllection
+pub Grammar: KiCADSchema = {
+    <h:HeaderCollection> <n:NodeColllection> => KiCADSchema { headers: h, body: n }
+}
+
+HeaderCollection: Vec<HeaderKind> = {
+    ( HeaderKindSwitch )*
 }
 
 NodeColllection: Vec<SchemaNode> = {
     ( NodeAlt )*
+}
+
+HeaderKindSwitch: HeaderKind = {
+    "EESchema Schematic File Version" <Numu8Const> => HeaderKind::DumpVersion(<>),
+    "Date" "\"" <DashDate> "\"" => HeaderKind::LastUpdated(<>),
+    "Title" <StringConst> => HeaderKind::DumpName(<>),
+    <EncodingTypeSwitch> => HeaderKind::Encoding(<>),
+}
+
+DashDate: Date<Utc> = {
+    <y:Numi32Const> "-" <m:Numi32Const> "-" <d:Numi32Const> => Utc.ymd(y, m as u32, d as u32)
+}
+
+EncodingTypeSwitch: EncodeKind = {
+    "encoding" "utf-8" => EncodeKind::UTF8,
 }
 
 ComponentDecl: Component = {
@@ -34,11 +62,19 @@ ConnectionDecl: Connection = {
 }
 
 CoordDecl: Coords = {
-    <x:NumConst> <y:NumConst> => Coords { x, y }
+    <x:Numi32Const> <y:Numi32Const> => Coords { x, y }
+}
+
+StringConst: String = {
+    "\"" <Name> "\""
 }
 
 Name: String = {
     <v:r"([A-Z]|[a-z])[0-9A-Za-z]*"> => v.to_string(),
 }
 
-NumConst: i32 = r"(\-?)[0-9]+" => i32::from_str(<>).unwrap();
+Numu8Const: u8 = {
+    <Numi32Const> => <> as u8
+}
+
+Numi32Const: i32 = r"(\-?)[0-9]+" => i32::from_str(<>).unwrap();

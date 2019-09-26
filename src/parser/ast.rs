@@ -1,4 +1,4 @@
-use chrono::prelude::*;
+use chrono::{Date, Utc};
 
 /// Co-ordinates of an item inside of the stucture file. All items apart from
 /// metadata should have this.
@@ -14,6 +14,24 @@ pub enum SchemaNode {
     Connection(Connection),
     Component(Component),
     Wire(Wire),
+}
+
+/// Header enum for encapsulating the various types of headers.
+///
+/// # Header types
+///
+/// - [HeaderKind::Encoding]: Wraps an [EncodeKind]
+/// - [HeaderKind::DumpVersion]: The version of KiCAD's file mechanism.
+/// Supports `4` officially.
+/// - [HeaderKind::DumpName]: The name of the save/dump file passed through.
+/// - [HeaderKind::LastUpdated]: The last date where the save file was
+/// modified.
+#[derive(Debug, PartialEq)]
+pub enum HeaderKind {
+    Encoding(EncodeKind),
+    DumpVersion(u8),
+    DumpName(String),
+    LastUpdated(Date<Utc>),
 }
 
 /// A "Connection" inside of the schema file.
@@ -51,13 +69,11 @@ pub struct Wire {
 ///
 /// # [Component] Structure
 ///
-/// - [Component::catagory]: Thought to be the name and extra infomation of a
+/// - [Component::name]: Thought to be the name and extra infomation of a
 /// component structured inside of the schema format as `[name]:[desc]`.
-/// - [Component::pos]: The [Coords] position of the component.
 #[derive(Debug, PartialEq)]
 pub struct Component {
     pub name: (String, String),
-    // pub pos: Coords,
 }
 
 /// The encoding type for the dump file.
@@ -71,22 +87,11 @@ pub enum EncodeKind {
 ///
 /// # [KiCADSchema] Structure
 ///
-/// - [KiCADSchema::encoded]: The enocde type of the file. This should usually
-/// be [EncodeKind::UTF8] unless on some non-standard locale.
-/// - [KiCADSchema::title]: The given title of the dump file.
-/// - [KiCADSchema::date_updated]: Last modified date. This uses [chrono] to
-/// give a user-friendly date representation.
-/// - [KiCADSchema::body]: Main structure of passed schematic file. Please see
-/// [SchemaNode] for more detail.
-/// - [KiCADSchema::version]: Schematic version (given by file author).
-/// - [KiCADSchema::schema_version]: The KiCAD dump file version. This
-/// currently is not counted, just extra metadata.
+/// - [KiCADSchema::headers]: The metadata contained inside of the save file.
+/// - [KiCADSchema::body]: The primary structure of the save file ([Component],
+/// [Wire], etc). You can find more details for this in [HeaderKind].
 #[derive(Debug, PartialEq)]
 pub struct KiCADSchema {
-    pub schema_version: u8,
-    pub encoded: EncodeKind,
-    pub title: String,
-    pub date_updated: DateTime<Utc>,
+    pub headers: Vec<HeaderKind>,
     pub body: Vec<SchemaNode>,
-    pub version: String,
 }
