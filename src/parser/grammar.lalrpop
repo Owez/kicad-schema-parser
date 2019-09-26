@@ -1,0 +1,44 @@
+use std::str::FromStr;
+use chrono::prelude::*;
+use crate::parser::ast::{KiCADSchema, SchemaNode, Component, Connection, Wire, Coords};
+
+grammar;
+
+pub Grammar: Vec<SchemaNode> = {
+    NodeColllection
+}
+
+NodeColllection: Vec<SchemaNode> = {
+    ( NodeAlt )*
+}
+
+ComponentDecl: Component = {
+    "$Comp" <n:CompName> "$EndComp" => Component { name: n }
+}
+
+CompName: (String, String) = {
+    <Name> ":" <Name>
+}
+
+NodeAlt: SchemaNode = {
+    <t:ConnectionDecl> => SchemaNode::Connection(t),
+    <t:WireDecl> => SchemaNode::Wire(t)
+}
+
+WireDecl: Wire = {
+    "Wire" "Wire" "Line" <s:CoordDecl> <e:CoordDecl> => Wire { start: s, end: e }
+}
+
+ConnectionDecl: Connection = {
+    "Connection" "~" <c:CoordDecl> => Connection { pos: c }
+}
+
+CoordDecl: Coords = {
+    <x:NumConst> <y:NumConst> => Coords { x, y }
+}
+
+Name: String = {
+    <v:r"([A-Z]|[a-z])[0-9A-Za-z]*"> => v.to_string(),
+}
+
+NumConst: i32 = r"(\-?)[0-9]+" => i32::from_str(<>).unwrap();

@@ -1,0 +1,13 @@
+[package]
+name = "kicad-schema-parser"
+version = "0.1.0"
+authors = ["scOwez <owez@scalist.net>"]
+edition = "2018"
+
+[build-dependencies]
+lalrpop = "0.17.2"
+
+[dependencies]
+lalrpop-util = "0.17.2"
+regex = "0.2.1"
+chrono = "0.4"
