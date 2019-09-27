@@ -1,5 +1,5 @@
 use std::str::FromStr;
-use chrono::{Date, Utc};
+use chrono::prelude::*;
 use crate::parser::ast::{
     KiCADSchema,
     SchemaNode,
@@ -48,17 +48,24 @@ NodeAlt: SchemaNode = {
 }
 
 TextDecl: Text = {
-    "Text" "Label" <c:CoordDecl> => Text { pos: c, body: unimplemented!() }
+    "Text" "Label" <c:CoordDecl> => Text { pos: c, content: unimplemented!() }
 }
 
 ComponentDecl: Component = {
-    "$Comp" <n:CompName> "$EndComp" => Component { name: n }
+    "$Comp" <n:CompName> <p:CompPos> "$EndComp" => Component { name: n, pos: p }
 }
 
 CompName: (String, String) = {
-    <Name> ":" <Name>
+    "L" <StringSepColon>
 }
 
+CompPos: Coords = {
+    "P" <CoordDecl>
+}
+
+StringSepColon: (String, String) = {
+    <Name> ":" <Name>
+}
 
 WireDecl: Wire = {
     "Wire" "Wire" "Line" <s:CoordDecl> <e:CoordDecl> => Wire { start: s, end: e }
