@@ -1,7 +1,7 @@
 use std::str::FromStr;
 use chrono::prelude::*;
 use crate::parser::ast::{
-    KiCADSchema,
+    KiCadSchema,
     SchemaNode,
     Component,
     EncodeKind,
@@ -15,8 +15,8 @@ use crate::parser::ast::{
 
 grammar;
 
-pub Grammar: KiCADSchema = {
-    <h:HeaderCollection> <n:NodeColllection> => KiCADSchema { headers: h, body: n }
+pub Grammar: KiCadSchema = {
+    <h:HeaderCollection> <n:NodeColllection> => KiCadSchema { headers: h, body: n }
 }
 
 HeaderCollection: Vec<HeaderKind> = {
@@ -49,7 +49,7 @@ NodeAlt: SchemaNode = {
 }
 
 TextDecl: Text = {
-    "Text" "Label" <c:CoordDecl> => Text { pos: c, content: unimplemented!() }
+    "Text" "Label" <c:CoordDecl> <o:Numi32Const> <d:Numi32Const> "~" <s:Name> => Text { pos: c, content: s, orientation: o, dimension: d }
 }
 
 ComponentDecl: Component = {

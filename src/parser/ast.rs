@@ -97,6 +97,8 @@ pub struct Wire {
 #[derive(Debug, PartialEq)]
 pub struct Text {
     pub pos: Coords,
+    pub orientation: i32,
+    pub dimension: i32,
     pub content: String,
 }
 
@@ -130,7 +132,7 @@ pub enum EncodeKind {
 /// - [KiCADSchema::body]: The primary structure of the save file ([Component],
 /// [Wire], etc). You can find more details for this in [HeaderKind].
 #[derive(Debug, PartialEq)]
-pub struct KiCADSchema {
+pub struct KiCadSchema {
     pub headers: Vec<HeaderKind>,
     pub body: Vec<SchemaNode>,
 }
