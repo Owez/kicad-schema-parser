@@ -47,6 +47,22 @@ pub struct Connection {
     pub pos: Coords,
 }
 
+/// The type of wire according to the documentation. The most commonly used
+/// variant is [WireType::Wire].
+/// 
+/// # Wire variants
+/// 
+/// - [WireType::Wire]: Most common basic line connecting components in
+/// schematics.
+/// - [WireType::Bus]: A bus wire, similar to [WireType::Wire].
+/// - [WireType::Note]: A "note" wire. Not sure what this does.
+#[derive(Debug, PartialEq)]
+pub enum WireType {
+    Wire,
+    Bus,
+    Note
+}
+
 /// A "Wire Wire" inside of the schema file.
 ///
 /// # Format Example
@@ -59,8 +75,15 @@ pub struct Connection {
 /// Wire Wire Line
 /// 	10400 4000 10400 4400
 /// ```
+/// 
+/// # [Wire] structure
+/// 
+/// - [Wire::ty]: The type of the wire according to [WireType].
+/// - [Wire::start]: Start co-ordinates of the wire.
+/// - [Wire::end]: End co-ordinates of the wire.
 #[derive(Debug, PartialEq)]
 pub struct Wire {
+    pub ty: WireType,
     pub start: Coords,
     pub end: Coords,
 }

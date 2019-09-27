@@ -9,7 +9,8 @@ use crate::parser::ast::{
     Connection,
     Wire,
     Coords,
-    Text
+    Text,
+    WireType
 };
 
 grammar;
@@ -68,7 +69,9 @@ StringSepColon: (String, String) = {
 }
 
 WireDecl: Wire = {
-    "Wire" "Wire" "Line" <s:CoordDecl> <e:CoordDecl> => Wire { start: s, end: e }
+    "Wire" "Wire" "Line" <s:CoordDecl> <e:CoordDecl> => Wire { ty: WireType::Wire, start: s, end: e },
+    "Wire" "Bus" "Line" <s:CoordDecl> <e:CoordDecl> => Wire { ty: WireType::Bus, start: s, end: e },
+    "Wire" "Notes" "Line" <s:CoordDecl> <e:CoordDecl> => Wire { ty: WireType::Note, start: s, end: e }
 }
 
 ConnectionDecl: Connection = {
