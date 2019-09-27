@@ -72,7 +72,7 @@ pub struct Wire {
 /// - [Text::pos]: Location of the text.
 /// - [Text::content]: Content of the text label (what it displays).
 #[derive(Debug, PartialEq)]
-struct Text {
+pub struct Text {
     pub pos: Coords,
     pub content: String,
 }
@@ -84,9 +84,12 @@ struct Text {
 ///
 /// - [Component::name]: Thought to be the name and extra infomation of a
 /// component structured inside of the schema format as `[name]:[desc]`.
+/// - [Component::pos]: Position of the component. Not sure if this is the mean
+/// center or anchored to the top left etc.
 #[derive(Debug, PartialEq)]
 pub struct Component {
     pub name: (String, String),
+    pub pos: Coords,
 }
 
 /// The encoding type for the dump file.
